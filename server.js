@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import { db } from './firebase'; // Asegúrate de importar tu configuración de Firebase
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 
 const app = express();
 app.use(cors());
@@ -21,13 +21,14 @@ app.post('/guests', async (req, res) => {
 });
 
 // Endpoint para obtener el conteo de invitados
-app.get('/guests/count', (req, res) => {
-    db.get(`SELECT COUNT(*) as count FROM guests`, (err, row) => {
-        if (err) {
-            return res.status(500).send(err.message);
-        }
-        res.json({ count: row.count });
-    });
+app.get('/guests/count', async (req, res) => {
+    try {
+        const snapshot = await getDocs(collection(db, "guests"));
+        const count = snapshot.size; // Obtiene el número de documentos en la colección
+        res.json({ count });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Iniciar el servidor
