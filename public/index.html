@@ -611,13 +611,8 @@
                 return response.json();
             })
             .then(data => {
-                // Incrementar el contador
-                count++;
-                document.getElementById('countDisplay').textContent = `Número de personas que han ingresado su nombre: ${count}`;
-
-                document.getElementById('displayGuestName').textContent = name;
-                document.getElementById('welcomePage').classList.remove('active');
-                document.getElementById('invitationPage').classList.add('active');
+                // Manejo de la respuesta
+                console.log('Invitado agregado:', data);
             })
             .catch(error => console.error('Error:', error));
         }
