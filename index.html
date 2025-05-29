@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación de Cumpleaños</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gold-gradient: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            --elegant-purple: #6c5ce7;
+            --soft-pink: #fd79a8;
+            --warm-gold: #fdcb6e;
+            --deep-navy: #2d3436;
+            --soft-white: #f8f9fa;
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --shadow-elegant: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 20%;
+            right: 20%;
+            animation-delay: 2s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 30%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        .floating-shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .page-welcome, .page-invitation {
+            display: none;
+            animation: pageSlideIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .page-welcome.active, .page-invitation.active {
+            display: block;
+        }
+
+        @keyframes pageSlideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(50px) scale(0.9);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: var(--shadow-elegant);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4em;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .welcome-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4em;
+            color: var(--deep-navy);
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .input-group {
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .input-field {
+            position: relative;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 20px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1.2em;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .input-field input:focus {
+            outline: none;
+            border-color: var(--elegant-purple);
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
+            transform: scale(1.03);
+        }
+
+        .btn-elegant {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-elegant::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--secondary-gradient);
+            transition: left 0.3s;
+        }
+
+        .btn-elegant:hover::before {
+            left: 0;
+        }
+
+        .btn-elegant:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-elegant span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Estilos de la invitación */
+        .invitation-header {
+            margin-bottom: 40px;
+        }
+
+        .avatar-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .avatar-ring {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--gold-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: avatarGlow 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        @keyframes avatarGlow {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(253, 203, 110, 0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 40px rgba(253, 203, 110, 0.8);
+                transform: scale(1.05);
+            }
+        }
+
+        .avatar-img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+        }
+
+        .invitation-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5em;
+            font-weight: 700;
+            background: var(--secondary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .guest-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            font-weight: 600;
+            color: var(--elegant-purple);
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: nameShimmer 4s linear infinite;
+        }
+
+        @keyframes nameShimmer {
+            0% { text-shadow: 2px 2px 4px rgba(108, 92, 231, 0.3); }
+            50% { text-shadow: 2px 2px 15px rgba(108, 92, 231, 0.6); }
+            100% { text-shadow: 2px 2px 4px rgba(108, 92, 231, 0.3); }
+        }
+
+        .invitation-details {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .invitation-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5em;
+            line-height: 2;
+            color: var(--deep-navy);
+            margin-bottom: 30px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            font-size: 1.3em;
+            font-weight: 500;
+            color: var(--deep-navy);
+        }
+
+        .detail-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 15px;
+            background: var(--warm-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+
+        .ornament {
+            height: 6px;
+            background: var(--gold-gradient);
+            margin: 40px auto;
+            border-radius: 3px;
+            width: 60%;
+            position: relative;
+            animation: ornamentPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes ornamentPulse {
+            0%, 100% { width: 60%; opacity: 0.8; }
+            50% { width: 80%; opacity: 1; }
+        }
+
+        .ornament::before,
+        .ornament::after {
+            content: '✦';
+            position: absolute;
+            top: -10px;
+            color: var(--warm-gold);
+            font-size: 1.5em;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        .ornament::before { left: -20px; }
+        .ornament::after { right: -20px; animation-delay: 1s; }
+
+        @keyframes sparkle {
+            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.7; }
+            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+        }
+
+        /* Efectos de partículas */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--warm-gold);
+            border-radius: 50%;
+            animation: particleFloat 8s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .btn-download {
+            background: var(--gold-gradient);
+            margin-top: 30px;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--deep-navy);
+            margin-top: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: var(--deep-navy);
+        }
+
+        .btn-download-image {
+            background: var(--gold-gradient);
+            margin-top: 30px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card { padding: 30px 20px; }
+            .welcome-title { font-size: 2.5em; }
+            .invitation-title { font-size: 2.5em; }
+            .guest-name { font-size: 2em; }
+            .avatar-ring { width: 120px; height: 120px; }
+            .avatar-img { width: 100px; height: 100px; }
+            .invitation-details { padding: 25px; }
+            .detail-item { font-size: 1.1em; }
+        }
+
+        @media print {
+            .floating-elements, .particles, .btn-elegant { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Elementos flotantes de fondo -->
+    <div class="floating-elements">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <!-- Partículas -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Página de bienvenida -->
+        <div class="page-welcome active" id="welcomePage">
+            <div class="card">
+                <h1 class="welcome-title">¡Celebremos Juntos!</h1>
+                <p class="welcome-subtitle">Ingresa tu nombre para recibir tu invitación personalizada</p>
+                
+                <div class="input-group">
+                    <div class="input-field">
+                        <input type="text" id="guestNameInput" placeholder="Tu nombre completo" required>
+                    </div>
+                    <button class="btn-elegant" onclick="showInvitation()">
+                        <span>✨ Ver mi invitación ✨</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página de invitación -->
+        <div class="page-invitation" id="invitationPage">
+            <div class="card" id="invitationCard">
+                <div class="invitation-header">
+                    <div class="avatar-container">
+                        <div class="avatar-ring">
+                            <div style="width: 130px; height: 130px; border-radius: 50%; background: linear-gradient(45deg, #ff9a9e, #fecfef); display: flex; align-items: center; justify-content: center; font-size: 4em;">🎉</div>
+                        </div>
+                    </div>
+                    <h1 class="invitation-title">¡Estás Invitado!</h1>
+                </div>
+
+                <div class="guest-name" id="displayGuestName">Nombre del invitado</div>
+
+                <div class="invitation-details">
+                    <p class="invitation-text">
+                        Te invito cordialmente a celebrar mi cumpleaños en una noche llena de alegría, música y momentos inolvidables
+                    </p>
+
+                    <div class="ornament"></div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">📅</div>
+                        <span><strong>Fecha:</strong> Sábado 15 de Junio, 2024</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">🕒</div>
+                        <span><strong>Hora:</strong> 7:00 PM en adelante</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">📍</div>
+                        <span><strong>Lugar:</strong> Salón de Eventos "La Celebración"</span>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">🎭</div>
+                        <span><strong>Código:</strong> Elegante Casual</span>
+                    </div>
+
+                    <div class="ornament"></div>
+
+                    <p class="invitation-text" style="font-size: 1.2em; margin-bottom: 10px;">
+                        <em>"La vida es una celebración, y tú eres parte importante de la mía"</em>
+                    </p>
+                </div>
+
+                <button class="btn-elegant btn-download" onclick="generatePDF()">
+                    <span>📱 Descargar Invitación</span>
+                </button>
+
+                <button class="btn-elegant btn-download-image" onclick="downloadImage()">
+                    <span>📷 Descargar como Imagen</span>
+                </button>
+
+                <button class="btn-elegant btn-back" onclick="goBack()">
+                    <span>← Volver</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="countDisplay">Número de personas que han ingresado su nombre: 0</div>
+
+    <script>
+        let count = 0; // Contador de nombres
+
+        // Crear partículas
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const colors = ['#ffd89b', '#19547b', '#667eea', '#764ba2', '#f093fb'];
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Mostrar invitación
+        function showInvitation() {
+            const name = document.getElementById('guestNameInput').value.trim();
+            if (!name) {
+                alert('Por favor, ingresa tu nombre');
+                return;
+            }
+
+            // Enviar el nombre al servidor
+            fetch('/guests', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error al guardar el nombre');
+                return response.json();
+            })
+            .then(data => {
+                // Incrementar el contador
+                count++;
+                document.getElementById('countDisplay').textContent = `Número de personas que han ingresado su nombre: ${count}`;
+
+                document.getElementById('displayGuestName').textContent = name;
+                document.getElementById('welcomePage').classList.remove('active');
+                document.getElementById('invitationPage').classList.add('active');
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Volver a la página principal
+        function goBack() {
+            document.getElementById('invitationPage').classList.remove('active');
+            document.getElementById('welcomePage').classList.add('active');
+            document.getElementById('guestNameInput').value = '';
+        }
+
+        // Generar PDF
+        function generatePDF() {
+            const name = document.getElementById('displayGuestName').textContent;
+            const invitationCard = document.getElementById('invitationCard');
+
+            // Crear un contenedor específico para el PDF
+            const pdfContainer = document.createElement('div');
+            pdfContainer.style.cssText = `
+                position: absolute;
+                left: -9999px;
+                top: 0;
+                width: 8.5in; // Ancho carta
+                padding: 20px;
+                background: white;
+                font-family: 'Poppins', sans-serif;
+            `;
+
+            // Clonar el contenido de la tarjeta
+            pdfContainer.innerHTML = invitationCard.innerHTML;
+
+            // Añadir el contenedor al documento
+            document.body.appendChild(pdfContainer);
+
+            const opt = {
+                margin: 0,
+                filename: `invitacion_${name.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    logging: true,
+                    windowWidth: 816, // 8.5in * 96dpi
+                    windowHeight: 1056 // 11in * 96dpi
+                },
+                jsPDF: {
+                    unit: 'in',
+                    format: 'letter',
+                    orientation: 'portrait',
+                    compress: true
+                }
+            };
+
+            html2pdf().set(opt).from(pdfContainer).save().then(() => {
+                document.body.removeChild(pdfContainer);
+                console.log('PDF generado exitosamente');
+            }).catch(error => {
+                console.error('Error generando PDF:', error);
+                if (document.body.contains(pdfContainer)) {
+                    document.body.removeChild(pdfContainer);
+                }
+            });
+        }
+
+        // Inicializar efectos
+        window.addEventListener('load', function() {
+            createParticles();
+            
+            // Recuperar el conteo al cargar la página
+            fetch('/guests/count')
+                .then(response => response.json())
+                .then(data => {
+                    count = data.count;
+                    document.getElementById('countDisplay').textContent = `Número de personas que han ingresado su nombre: ${count}`;
+                })
+                .catch(error => console.error('Error:', error));
+        });
+
+        // Recrear partículas periódicamente
+        setInterval(createParticles, 15000);
+
+        function downloadImage() {
+            const invitationCard = document.getElementById('invitationCard');
+            
+            // Asegurarse de que la tarjeta sea visible
+            invitationCard.style.display = 'block';
+
+            html2canvas(invitationCard, { useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'invitacion.png';
+                link.click();
+            }).catch(error => {
+                console.error('Error al descargar la imagen:', error);
+            });
+        }
+    </script>
+</body>
+</html>
