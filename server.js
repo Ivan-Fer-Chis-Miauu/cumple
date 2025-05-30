@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { db } from './firebase'; // Asegúrate de importar tu configuración de Firebase
+import { db } from './firebase.js'; // Asegúrate de incluir .js
 import { collection, addDoc, getDocs } from "firebase/firestore";
 
 const app = express();
@@ -16,6 +16,7 @@ app.post('/guests', async (req, res) => {
         const docRef = await addDoc(collection(db, "guests"), { name });
         res.status(201).json({ id: docRef.id });
     } catch (error) {
+        console.error("Error al agregar invitado:", error); // Agregar log
         res.status(500).json({ error: error.message });
     }
 });
@@ -24,9 +25,10 @@ app.post('/guests', async (req, res) => {
 app.get('/guests/count', async (req, res) => {
     try {
         const snapshot = await getDocs(collection(db, "guests"));
-        const count = snapshot.size; // Obtiene el número de documentos en la colección
+        const count = snapshot.size;
         res.json({ count });
     } catch (error) {
+        console.error("Error al contar invitados:", error); // Agregar log
         res.status(500).json({ error: error.message });
     }
 });

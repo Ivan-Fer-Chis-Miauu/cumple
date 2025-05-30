@@ -107,24 +107,20 @@
             position: relative;
         }
 
-        .page-welcome, .page-invitation {
+        .page-welcome {
             display: none;
-            animation: pageSlideIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .page-welcome.active, .page-invitation.active {
+        .page-welcome.active {
             display: block;
         }
 
-        @keyframes pageSlideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(50px) scale(0.9);
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1);
-            }
+        .page-invitation {
+            display: none;
+        }
+
+        .page-invitation.active {
+            display: block;
         }
 
         .card {
@@ -611,11 +607,13 @@
                 return response.json();
             })
             .then(data => {
-                // Incrementar el contador
-                count++;
-                document.getElementById('countDisplay').textContent = `Número de personas que han ingresado su nombre: ${count}`;
+                // Manejo de la respuesta
+                console.log('Invitado agregado:', data);
 
+                // Actualizar el nombre en la invitación
                 document.getElementById('displayGuestName').textContent = name;
+
+                // Cambiar de página
                 document.getElementById('welcomePage').classList.remove('active');
                 document.getElementById('invitationPage').classList.add('active');
             })
